@@ -134,13 +134,14 @@ async def send_places_to_del(
                 reply_markup=ReplyKeyboardRemove()
             )
             await state.clear()
+            return
         else:
             await message.answer(
                 text="ОСТОРОЖНО!!!\nместо, на кнопку которого ты нажмёшь будет безвозвратно удалено,\
     чтобы выйти из режима удаления напиши \"отмена\"",
                 reply_markup=reply_markup
             )
-        await state.set_state(DeletionStates.waiting_for_deletion)
+            await state.set_state(DeletionStates.waiting_for_deletion)
 
 @admin_router.callback_query(DeletionStates.waiting_for_district, F.data.startswith("page_"))
 async def handle_deletion_pagination(
