@@ -109,7 +109,7 @@ async def del_place(message: types.Message, state: FSMContext):
     )
     await state.set_state(DeletionStates.waiting_for_district)
 
-@admin_router.callback_query(or_f(DeletionStates.waiting_for_deletion, DeletionStates.waiting_for_district), F.data.startswith("page_"))
+@admin_router.callback_query(DeletionStates.waiting_for_district, F.data.startswith("page_"))
 @admin_router.message(DeletionStates.waiting_for_district, F.text)
 async def send_places_to_del(
     state: FSMContext,
@@ -138,9 +138,8 @@ async def send_places_to_del(
     чтобы выйти из режима удаления напиши \"отмена\"",
                 reply_markup=reply_markup
             )
-            await state.set_state(DeletionStates.waiting_for_deletion)
 
-@admin_router.callback_query(DeletionStates.waiting_for_deletion)
+@admin_router.callback_query(F.data.startswith("delete_"))
 async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession):
     try:
         place_id = int(callback_query.data.split('-')[-1])
