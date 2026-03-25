@@ -52,7 +52,7 @@ async def suggestions_review(message: types.Message, session: AsyncSession):
     )
     image = types.InputMediaPhoto(
         media=place.photo_url,
-        caption=f"{place.description}\n--------\nStatus - {place.status}"
+        caption=f"Предложение в район {place.district}\n\n{place.description}\n--------\nStatus - {place.status}"
     )
     await message.answer_photo(
         photo=image.media,

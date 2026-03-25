@@ -138,11 +138,11 @@ def get_suggestion_view_btns(
     for text, menu_name in pagination_btns.items():
         if menu_name == "next":
             row.append(InlineKeyboardButton(text=text,
-                    callback_data=f"pageId_{page_id+1}").pack())
+                    callback_data=f"pageId_{page_id+1}")).pack()
 
         elif menu_name == "previous":
             row.append(InlineKeyboardButton(text=text,
-                    callback_data=f"pageId_{page_id-1}").pack())
+                    callback_data=f"pageId_{page_id-1}")).pack()
 
     return keyboard.row(*row).as_markup()
 
