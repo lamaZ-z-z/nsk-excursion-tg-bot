@@ -34,7 +34,7 @@ async def level_callback_handling(
         level=callback_data.level,
         translit_district=callback_data.translit_district,
         place_id=callback_data.place_id,
-        page=callback_data.page
+        page_num=callback_data.page
     )
     await callback.message.edit_media(
         media=InputMediaPhoto(
