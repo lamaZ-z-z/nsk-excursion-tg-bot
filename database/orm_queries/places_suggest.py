@@ -85,8 +85,7 @@ async def get_suggestion_by_id(
 ) -> Optional[PlaceSuggestion]:
     result = await session.execute(
         select(PlaceSuggestion).where(
-            PlaceSuggestion.status == 'pending' 
-            and PlaceSuggestion.id == suggestion_id
+            PlaceSuggestion.id == suggestion_id
         )
     )
     return result.scalar_one_or_none()
