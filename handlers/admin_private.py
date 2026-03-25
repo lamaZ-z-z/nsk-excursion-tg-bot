@@ -1,6 +1,7 @@
 '''Module for handling admin's messages'''
 from typing import Optional
 from aiogram import Router, types, F
+from aiogram.types import ReplyKeyboardRemove
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -97,9 +98,8 @@ class DeletionStates(StatesGroup):
 
 @admin_router.message(StateFilter(DeletionStates), F.text.lower() == 'отмена')
 async def handle_cancel(message: types.Message, state: FSMContext):
-    if message.text.lower() == 'отмена':
-        await state.clear()
-        await message.answer("действия отменены")
+    await state.clear()
+    await message.answer("действия отменены", reply_markup=ReplyKeyboardRemove)
 
 
 @admin_router.message(Command("delete_place"))
@@ -135,6 +135,7 @@ async def send_places_to_del(
     чтобы выйти из режима удаления напиши \"отмена\"",
                 reply_markup=reply_markup
             )
+        await state.set_state(DeletionStates.waiting_for_deletion)
 
 @admin_router.callback_query(DeletionStates.waiting_for_district, F.data.startswith("page_"))
 async def handle_deletion_pagination(
@@ -156,12 +157,17 @@ async def handle_deletion_pagination(
         await callback_query.message.edit_reply_markup(reply_markup=reply_markup)
     await callback_query.answer()
 
-@admin_router.callback_query(F.data.startswith("delete_"))
+@admin_router.callback_query(DeletionStates.waiting_for_deletion, F.data.startswith("delete_"))
 async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession):
     try:
         place_id = int(callback_query.data.split('_')[-1])
         place = await get_place(session, place_id)
+        
         await delete_place(session=session, place_id=place_id)
-        await callback_query.answer(text=f'Место {place.name} успешно удалено')
+        await callback_query.message.answer(
+            text=f'Место {place.name} успешно удалено',
+            reply_markup=ReplyKeyboardRemove
+        )
     except Exception as E:
         await callback_query.message.answer(f"Возникла непредвиденная ошибка\n {E}")
+        
