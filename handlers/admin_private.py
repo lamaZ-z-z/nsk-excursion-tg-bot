@@ -36,41 +36,38 @@ async def admin_features(message: types.Message):
     )
 
 
-
 @admin_router.message(Command("suggestions"))
-@admin_router.callback_query(F.data.startswith("placeId_"))
-async def suggestions_review(
-    message: Optional[types.Message] = None,
-    callback: Optional[types.CallbackQuery] = None,
-    session: AsyncSession = AsyncSession,
-    ):
+async def suggestions_review(message: types.Message, session: AsyncSession):
     '''Функция для просматривания и одобрения мест из предложки'''
-    place_id = int(callback.data.split('_')[-1])
-
-    paginator = Paginator(array=await get_all_suggestions(session), page=place_id)
+    paginator = Paginator(array=await get_all_suggestions(session))
     paging_btns = pagination_btns(paginator)
     place = paginator.get_page()
-
     kbd = get_suggestions_view_btns(pagination_btns=paging_btns,
-                                place_id=place_id, paginator=paginator
+                                place_id=place.id, paginator=paginator
     )
     image = types.InputMediaPhoto(
         media=place.image,
         caption=f"{place.description}\n--------\nStatus - {place.status}"
     )
+    await message.answer_photo(
+        photo=image.media,
+        caption=image.caption,
+        reply_markup=kbd
+    )
 
-    if message:
-        await message.answer_photo(
-            photo=image.media,
-            caption=image.caption,
-            reply_markup=kbd
-        )
-    else:
-        await callback.message.edit_photo(
-            photo=image.media,
-            caption=image.caption,
-            reply_markup=kbd
-        )
+@admin_router.callback_query(F.data.startswith("pageId_"))
+async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
+    page_id = int(callback.data.split('_')[-1])
+    paginator = Paginator(array=await get_all_suggestions(session), page=page_id)
+    paging_btns = pagination_btns(paginator)
+    place = paginator.get_page()
+    kbd = get_suggestions_view_btns(
+        pagination_btns=paging_btns, place_id=place.id,
+         paginator=paginator, page_id=page_id
+    )
+    await callback.message.edit_media(reply_markup=kbd)
+
+
 @admin_router.callback_query(or_f(F.data.startswith == 'approved', F.data.startswith == 'rejected'))
 async def status_change(callback_query: types.CallbackQuery, session: AsyncSession, ):
     status = callback_query.data.split('_')[0]
