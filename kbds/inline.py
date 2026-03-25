@@ -89,8 +89,10 @@ async def get_places_level_btns(
                         level=level,
                         page=page-1)).pack()
             )
-
-    return keyboard.row(*row).as_markup()
+    if row:
+        return keyboard.row(*row).as_markup()
+    else:
+        return keyboard.adjust(*sizes).as_markup()
 
 
 
