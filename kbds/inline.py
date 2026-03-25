@@ -63,15 +63,12 @@ async def get_places_level_btns(
 
     for place in page:
         keyboard.button(
-            text=place.name, callback_data=LevelCallBack(place_id=place.id, level=level+1)
+            text=place.name, callback_data=LevelCallBack(place_id=place.id, level=level+1).pack()
         )
     
     keyboard.adjust(*sizes)
     keyboard.button(text="назад ↩️",
-                    callback_data=LevelCallBack(
-                        level=level-1,
-                        # translit_district=page[0].district_translit_name if page else None
-                    )
+                    callback_data=LevelCallBack(level=level-1).pack()
     )
 
     row = []
