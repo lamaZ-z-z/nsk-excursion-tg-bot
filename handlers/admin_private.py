@@ -125,13 +125,17 @@ async def send_places_to_del(
             "Кажется выбранного района нет в списке, попробуй ещё раз или напиши 'отмена'"
         )
     else:
-
-        await message.answer(
-            text="ОСТОРОЖНО!!!\nместо, на кнопку которого ты нажмёшь будет безвозвратно удалено,\
- чтобы выйти из режима удаления напиши \"отмена\"",
-            reply_markup=get_del_places_btns(district_name=district, session=session, page=page)
-        )
-        await state.set_state(DeletionStates.waiting_for_deletion)
+        reply_markup = await get_del_places_btns(district_name=district, session=session, page=page)
+        if not reply_markup:
+            await message.answer("Кажется в этом районе нет никаких мест для удаления")
+            await state.clear()
+        else:
+            await message.answer(
+                text="ОСТОРОЖНО!!!\nместо, на кнопку которого ты нажмёшь будет безвозвратно удалено,\
+    чтобы выйти из режима удаления напиши \"отмена\"",
+                reply_markup=reply_markup
+            )
+            await state.set_state(DeletionStates.waiting_for_deletion)
 
 @admin_router.callback_query(DeletionStates.waiting_for_deletion)
 async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession):
