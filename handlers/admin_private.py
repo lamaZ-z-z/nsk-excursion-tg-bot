@@ -69,7 +69,7 @@ async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
         caption=f"Предложение в район {place.district_name}\n\n{place.description}\n--------\nStatus - {place.status}"
     ) 
     await callback.message.edit_media(
-        media=media,
+        media=image,
         reply_markup=kbd)
 
 
