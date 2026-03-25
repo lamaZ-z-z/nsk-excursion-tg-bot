@@ -118,26 +118,30 @@ async def send_places_to_del(
     callback_query: Optional[types.CallbackQuery] = None
 ):
     if callback_query:
-        page = int(callback_query.split('_')[-1])
-    else:
-        page = 1
-
-    district = message.text
-    if district not in districts:
-        await message.answer(
-            "Кажется выбранного района нет в списке, попробуй ещё раз или напиши 'отмена'"
-        )
-    else:
-        reply_markup = await get_del_places_btns(district_name=district, session=session, page=page)
-        if not reply_markup:
-            await message.answer("Кажется в этом районе нет никаких мест для удаления")
-            await state.clear()
-        else:
+        page = int(callback_query.data.split('_')[-1])
+        district = await state.get_data()['district']
+        kbd = await get_del_places_btns(district_name=district, session=session, page=page)
+        await callback_query.message.edit_reply_markup(reply_markup=kbd)
+        
+    elif message:
+        district = message.text
+        if district not in districts:
             await message.answer(
-                text="ОСТОРОЖНО!!!\nместо, на кнопку которого ты нажмёшь будет безвозвратно удалено,\
-    чтобы выйти из режима удаления напиши \"отмена\"",
-                reply_markup=reply_markup
+                "Кажется выбранного района нет в списке, попробуй ещё раз или напиши 'отмена'"
             )
+        else:
+            await state.update(district=district)
+
+            reply_markup = await get_del_places_btns(district_name=district, session=session)
+            if not reply_markup:
+                await message.answer("Кажется в этом районе нет никаких мест для удаления, был совершён выход из состояния удаления")
+                await state.clear()
+            else:
+                await message.answer(
+                    text="ОСТОРОЖНО!!!\nместо, на кнопку которого ты нажмёшь будет безвозвратно удалено,\
+        чтобы выйти из режима удаления напиши \"отмена\"",
+                    reply_markup=reply_markup
+                )
 
 @admin_router.callback_query(F.data.startswith("delete_"))
 async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession):
