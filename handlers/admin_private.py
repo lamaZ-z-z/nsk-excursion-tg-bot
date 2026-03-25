@@ -49,7 +49,7 @@ async def suggestions_review(message: types.Message, session: AsyncSession):
     kbd = get_suggestion_view_btns(place_id=place.id, paging_btns=paging_btns, page_id=1)
     image = types.InputMediaPhoto(
         media=place.photo_url,
-        caption=f"Предложение в район {place.district}\n\n{place.description}\n--------\nStatus - {place.status}"
+        caption=f"Предложение в район {place.district_name}\n\n{place.description}\n--------\nStatus - {place.status}"
     )
     await message.answer_photo(
         photo=image.media,
