@@ -51,7 +51,7 @@ async def suggestions_review(message: types.Message, session: AsyncSession):
         pagination_btns=paging_btns, page_id=1
     )
     image = types.InputMediaPhoto(
-        media=place.image,
+        media=place.photo_url,
         caption=f"{place.description}\n--------\nStatus - {place.status}"
     )
     await message.answer_photo(
