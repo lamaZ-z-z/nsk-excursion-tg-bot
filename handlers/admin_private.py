@@ -83,12 +83,12 @@ async def status_change(callback_query: types.CallbackQuery, session: AsyncSessi
         await add_place_from_suggestion(session=session,
         suggested_place=suggestion)
         await callback_query.answer(
-            text=f'Место "{suggestion.palce_name}" успешно добавлено в район {suggestion.district_name}',
+            text=f'Место "{suggestion.place_name}" успешно добавлено в район {suggestion.district_name}',
             show_alert=True
         )
     else:
         await callback_query.answer(
-            text=f'Статус места "{suggestion.palce_name}" успешно изменён на rejected',
+            text=f'Статус места "{suggestion.place_name}" успешно изменён на rejected',
             show_alert=True
         )
 
