@@ -160,7 +160,7 @@ async def handle_deletion_pagination(
 async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession):
     try:
         place_id = int(callback_query.data.split('_')[-1])
-        place = get_place(session, place_id)
+        place = await get_place(session, place_id)
         await delete_place(session=session, place_id=place_id)
         await callback_query.answer(text=f'Место {place.name} успешно удалено')
     except Exception as E:
