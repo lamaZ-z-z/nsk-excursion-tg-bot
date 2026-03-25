@@ -173,10 +173,10 @@ async def get_del_places_btns(
     for text, menu_name in pagination_btns(paginator).items():
         if menu_name == "next":
             row.append(InlineKeyboardButton(text=text,
-                    callback_data=f"page_{page+1}").pack())
+                    callback_data=f"page_{page+1}"))
 
         elif menu_name == "previous":
             row.append(InlineKeyboardButton(text=text,
-                    callback_data=f"page_{page-1}").pack())
+                    callback_data=f"page_{page-1}"))
 
     return keyboard.row(*row).as_markup()

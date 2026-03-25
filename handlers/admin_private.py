@@ -66,7 +66,7 @@ async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
     kbd = get_suggestion_view_btns(place_id=place.id, paging_btns=paging_btns, page_id=page_id)
     image = types.InputMediaPhoto(
         media=place.photo_url,
-        caption=f"Предложение в район {place.district_name}\n\n{place.description}\n--------\nStatus - {place.status}"
+        caption=f"Предложение в район {place.district_name}\n\n{place.description}\n{place.TwoGisURL}\n--------\nStatus - {place.status}"
     ) 
     await callback.message.edit_media(
         media=image,
@@ -80,8 +80,7 @@ async def status_change(callback_query: types.CallbackQuery, session: AsyncSessi
     suggestion = await get_suggestion_by_id(session=session, suggestion_id=suggestion_id)
     await suggestion_status_update(session=session, status=status, suggestion_id=suggestion_id)
     if status == 'approved':
-        await add_place_from_suggestion(session=session,
-        suggested_place=suggestion)
+        await add_place_from_suggestion(session=session, suggested_place=suggestion)
         await callback_query.answer(
             text=f'Место "{suggestion.place_name}" успешно добавлено в район {suggestion.district_name}',
             show_alert=True
