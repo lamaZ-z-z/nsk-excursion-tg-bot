@@ -100,7 +100,7 @@ class DeletionStates(StatesGroup):
 
 @admin_router.message(StateFilter(DeletionStates), F.text.lower() == 'отмена')
 async def handle_cancel(message: types.Message, state: FSMContext):
-    await message.answer(text="действия отменены", reply_markup=ReplyKeyboardRemove)
+    await message.answer(text="действия отменены", reply_markup=ReplyKeyboardRemove())
     await state.clear()
 
 
@@ -131,7 +131,7 @@ async def send_places_to_del(
         if not has_buttons(reply_markup):
             await message.answer(
                 text="Кажется в этом районе нет никаких мест для удаления, был совершён выход из состояния удаления",
-                reply_markup=ReplyKeyboardRemove
+                reply_markup=ReplyKeyboardRemove()
             )
             await state.clear()
         else:
@@ -171,7 +171,7 @@ async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSess
         await delete_place(session=session, place_id=place_id)
         await callback_query.message.answer(
             text='Место успешно удалено, чтобы выйти из режима удаления напиши "отмена"',
-            reply_markup=ReplyKeyboardRemove,
+            reply_markup=ReplyKeyboardRemove(),
         )
     except Exception as E:
         await callback_query.message.answer(f"Возникла непредвиденная ошибка\n {E}")
