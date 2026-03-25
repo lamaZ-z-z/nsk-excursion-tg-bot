@@ -118,8 +118,7 @@ async def get_place_kbds(
 
 def get_suggestion_view_btns(
     place_id: int,
-    paginator: Paginator,
-    pagination_btns: dict,
+    paging_btns: dict,
     sizes: tuple[int] = (1,),
     page_id: int = 1
     ):
@@ -135,7 +134,7 @@ def get_suggestion_view_btns(
     keyboard.adjust(*sizes)
 
     row = []
-    for text, menu_name in pagination_btns.items():
+    for text, menu_name in paging_btns.items():
         if menu_name == "next":
             row.append(InlineKeyboardButton(text=text,
                     callback_data=f"pageId_{page_id+1}")).pack()
