@@ -77,9 +77,9 @@ async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
 async def status_change(callback_query: types.CallbackQuery, session: AsyncSession, ):
     status = callback_query.data.split('_')[0]
     suggestion_id = int(callback_query.data.split('_')[-1])
+    suggestion = await get_suggestion_by_id(session=session, suggestion_id=suggestion_id)
     await suggestion_status_update(session=session, status=status, suggestion_id=suggestion_id)
     if status == 'approved':
-        suggestion = await get_suggestion_by_id(session=session, suggestion_id=suggestion_id)
         await add_place_from_suggestion(session=session,
         suggested_place=suggestion)
         await callback_query.answer(
