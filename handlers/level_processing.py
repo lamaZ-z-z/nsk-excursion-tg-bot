@@ -19,10 +19,10 @@ async def districts_level(session: AsyncSession, level: int):
     return image, kbds
 
 
-async def places_level(session: AsyncSession, level: int, translit_district: str, page: int):
+async def places_level(session: AsyncSession, level: int, translit_district: str, page_num: int):
     district = await orm_queries.get_district(session=session, translit_name=translit_district)
     kbds = await get_places_level_btns(level=level, session=session,
-                                 translit_district=translit_district, page=page)
+                                 translit_district=translit_district, page_num=page_num)
     image = InputMediaPhoto(media=district.image, caption=district.description)
     return image, kbds
 
@@ -38,12 +38,12 @@ async def get_levels_content(
     level: int,
     translit_district: Optional[str] = None,
     place_id: Optional[str] = None,
-    page: Optional[int] = None
+    page_num: Optional[int] = None
 ):
     if level == 0:
         return await districts_level(session=session, level=level)
     elif level == 1 and translit_district:
         return await places_level(session=session, level=level,
-                             translit_district=translit_district, page=page)
+                             translit_district=translit_district, page_num=page_num)
     elif level == 2:
         return await place_level(session=session, level=level, place_id=place_id)
