@@ -73,7 +73,7 @@ async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
         reply_markup=kbd)
 
 
-@admin_router.callback_query(or_f(F.data.startswith == 'approved', F.data.startswith == 'rejected'))
+@admin_router.callback_query(or_f(F.data.startswith('approved_'), F.data.startswith('rejected_')))
 async def status_change(callback_query: types.CallbackQuery, session: AsyncSession, ):
     status = callback_query.data.split('_')[0]
     suggestion_id = int(callback_query.data.split('_')[-1])
