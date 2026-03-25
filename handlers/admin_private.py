@@ -64,7 +64,14 @@ async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
     paging_btns = pagination_btns(paginator)
     place = paginator.get_page()[0]
     kbd = get_suggestion_view_btns(place_id=place.id, paging_btns=paging_btns, page_id=page_id)
-    await callback.message.edit_media(reply_markup=kbd)
+    image = types.InputMediaPhoto(
+        media=place.photo_url,
+        caption=f"Предложение в район {place.district_name}\n\n{place.description}\n--------\nStatus - {place.status}"
+    ) 
+    await callback.message.edit_media(
+        photo=image.media,
+        caption=image.caption,
+        reply_markup=kbd)
 
 
 @admin_router.callback_query(or_f(F.data.startswith == 'approved', F.data.startswith == 'rejected'))
