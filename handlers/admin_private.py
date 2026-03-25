@@ -5,6 +5,7 @@ from aiogram.types import ReplyKeyboardRemove
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
+from aiogram.enums.parse_mode import ParseMode
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from filters import ChatTypeFilter, IsAdmin
@@ -39,6 +40,7 @@ async def admin_features(message: types.Message):
 @admin_router.message(Command("suggestions"))
 @admin_router.callback_query(F.data.startswith("placeId_"))
 async def suggestions_review(
+    *,
     session: AsyncSession,
     message: Optional[types.Message] = None,
     callback: Optional[types.CallbackQuery] = None,
@@ -71,7 +73,7 @@ async def suggestions_review(
             reply_markup=kbd
         )
 @admin_router.callback_query(or_f(F.data.startswith == 'approved', F.data.startswith == 'rejected'))
-async def status_change(session: AsyncSession, callback_query: types.CallbackQuery):
+async def status_change(callback_query: types.CallbackQuery, session: AsyncSession, ):
     status = callback_query.data.split('_')[0]
     suggestion_id = int(callback_query.data.split('_')[-1])
     await suggestion_status_update(session=session, status=status, suggestion_id=suggestion_id)
@@ -169,7 +171,8 @@ async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSess
         await delete_place(session=session, place_id=place_id)
         await callback_query.message.answer(
             text=f'Место {place.name} успешно удалено',
-            reply_markup=ReplyKeyboardRemove
+            reply_markup=ReplyKeyboardRemove,
+            parse_mode=ParseMode.MARKDOWN_V2
         )
     except Exception as E:
         await callback_query.message.answer(f"Возникла непредвиденная ошибка\n {E}")
