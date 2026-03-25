@@ -19,7 +19,7 @@ from database.orm_queries import (
 )
 from common import cmds, districts
 from utils.pagination import Paginator, pagination_btns
-from kbds.inline import get_suggestions_view_btns, get_del_places_btns
+from kbds.inline import get_suggestion_view_btns, get_del_places_btns
 from kbds.reply import get_districts_keyboard
 from utils.btns_check import has_buttons
 
@@ -39,11 +39,16 @@ async def admin_features(message: types.Message):
 @admin_router.message(Command("suggestions"))
 async def suggestions_review(message: types.Message, session: AsyncSession):
     '''Функция для просматривания и одобрения мест из предложки'''
-    paginator = Paginator(array=await get_all_suggestions(session))
+    suggestions = await get_all_suggestions(session)
+    if not suggestions:
+        await message.answer("Кажется в предложке ещё нет предложений")
+        return
+    paginator = Paginator(array=suggestions)
     paging_btns = pagination_btns(paginator)
-    place = paginator.get_page()
-    kbd = get_suggestions_view_btns(pagination_btns=paging_btns,
-                                place_id=place.id, paginator=paginator
+    place = paginator.get_page()[0]
+    kbd = get_suggestion_view_btns(
+        place_id=place.id, paginator=paginator,
+        pagination_btns=paging_btns, page_id=1
     )
     image = types.InputMediaPhoto(
         media=place.image,
@@ -60,8 +65,8 @@ async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
     page_id = int(callback.data.split('_')[-1])
     paginator = Paginator(array=await get_all_suggestions(session), page=page_id)
     paging_btns = pagination_btns(paginator)
-    place = paginator.get_page()
-    kbd = get_suggestions_view_btns(
+    place = paginator.get_page()[0]
+    kbd = get_suggestion_view_btns(
         pagination_btns=paging_btns, place_id=place.id,
          paginator=paginator, page_id=page_id
     )

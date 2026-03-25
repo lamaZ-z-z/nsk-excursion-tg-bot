@@ -129,8 +129,8 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
              reply_markup=ReplyKeyboardRemove())
             return
     new_suggestion = await add_place_suggestion(session=session, **(await state.get_data()))
-    if (message.from_user.id == 5060090557
-        or message.from_user.id == 5256135255
+    if (message.from_user.id == 5256135255
+        # or message.from_user.id == 5060090557
     ):
         await add_place_from_suggestion(session=session, suggested_place=new_suggestion)
         await message.answer(f"Место \"{new_suggestion.place_name}\"\

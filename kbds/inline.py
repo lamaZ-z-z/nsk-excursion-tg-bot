@@ -116,7 +116,7 @@ async def get_place_kbds(
 
 
 
-async def get_suggestions_view_btns(
+async def get_suggestion_view_btns(
     place_id: int,
     paginator: Paginator,
     pagination_btns: dict,
@@ -124,7 +124,8 @@ async def get_suggestions_view_btns(
     page_id: int = 1
     ):
     '''
-    Функция которая возвращает инлайн-кнопки ...
+    Функция которая возвращает инлайн-кнопки для просмотра
+    админом одного места из предложки с кнопками для пагинации
     '''
     keyboard = InlineKeyboardBuilder()
 
