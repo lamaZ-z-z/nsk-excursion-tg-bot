@@ -40,10 +40,9 @@ async def admin_features(message: types.Message):
 @admin_router.message(Command("suggestions"))
 @admin_router.callback_query(F.data.startswith("placeId_"))
 async def suggestions_review(
-    *,
-    session: AsyncSession,
     message: Optional[types.Message] = None,
     callback: Optional[types.CallbackQuery] = None,
+    session: AsyncSession = AsyncSession,
     ):
     '''Функция для просматривания и одобрения мест из предложки'''
     place_id = int(callback.data.split('_')[-1])

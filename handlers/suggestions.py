@@ -134,7 +134,7 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
     ):
         await add_place_from_suggestion(session=session, suggested_place=new_suggestion)
         await message.answer(f"Место \"{new_suggestion.place_name}\"\
-теперь доступно в районе {new_suggestion.district_name}")
+ теперь доступно в районе {new_suggestion.district_name}")
     else:
         await message.answer(SEV_ANS)
     await state.clear()
