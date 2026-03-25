@@ -109,39 +109,51 @@ async def del_place(message: types.Message, state: FSMContext):
     )
     await state.set_state(DeletionStates.waiting_for_district)
 
-@admin_router.callback_query(DeletionStates.waiting_for_district, F.data.startswith("page_"))
+
 @admin_router.message(DeletionStates.waiting_for_district, F.text)
 async def send_places_to_del(
     state: FSMContext,
     session: AsyncSession,
-    message: Optional[types.Message] = None,
-    callback_query: Optional[types.CallbackQuery] = None
+    message: types.Message,
 ):
-    if callback_query:
-        page = int(callback_query.data.split('_')[-1])
-        district = await state.get_data()['district']
-        kbd = await get_del_places_btns(district_name=district, session=session, page=page)
-        await callback_query.message.edit_reply_markup(reply_markup=kbd)
-        
-    elif message:
-        district = message.text
-        if district not in districts:
-            await message.answer(
-                "Кажется выбранного района нет в списке, попробуй ещё раз или напиши 'отмена'"
-            )
-        else:
-            await state.update(district=district)
+    district = message.text
+    if district not in districts:
+        await message.answer(
+            "Кажется выбранного района нет в списке, попробуй ещё раз или напиши 'отмена'"
+        )
+    else:
+        await state.update_data(district=district)
 
-            reply_markup = await get_del_places_btns(district_name=district, session=session)
-            if not reply_markup:
-                await message.answer("Кажется в этом районе нет никаких мест для удаления, был совершён выход из состояния удаления")
-                await state.clear()
-            else:
-                await message.answer(
-                    text="ОСТОРОЖНО!!!\nместо, на кнопку которого ты нажмёшь будет безвозвратно удалено,\
-        чтобы выйти из режима удаления напиши \"отмена\"",
-                    reply_markup=reply_markup
-                )
+        reply_markup = await get_del_places_btns(district_name=district, session=session)
+        if not reply_markup:
+            await message.answer("Кажется в этом районе нет никаких мест для удаления, был совершён выход из состояния удаления")
+            await state.clear()
+        else:
+            await message.answer(
+                text="ОСТОРОЖНО!!!\nместо, на кнопку которого ты нажмёшь будет безвозвратно удалено,\
+    чтобы выйти из режима удаления напиши \"отмена\"",
+                reply_markup=reply_markup
+            )
+
+@admin_router.callback_query(DeletionStates.waiting_for_district, F.data.startswith("page_"))
+async def handle_deletion_pagination(
+    callback_query: types.CallbackQuery,
+    state: FSMContext,
+    session: AsyncSession
+):
+    data = await state.get_data()
+    district = data.get('district')
+        
+    page = int(callback_query.data.split('_')[-1])
+    reply_markup = await get_del_places_btns(
+        district_name=district, 
+        session=session, 
+        page=page
+    )
+    
+    if reply_markup:
+        await callback_query.message.edit_reply_markup(reply_markup=reply_markup)
+    await callback_query.answer()
 
 @admin_router.callback_query(F.data.startswith("delete_"))
 async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession):
