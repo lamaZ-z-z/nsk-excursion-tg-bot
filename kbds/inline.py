@@ -116,7 +116,7 @@ async def get_place_kbds(
 
 
 
-async def get_suggestion_view_btns(
+def get_suggestion_view_btns(
     place_id: int,
     paginator: Paginator,
     pagination_btns: dict,
