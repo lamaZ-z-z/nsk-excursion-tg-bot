@@ -92,7 +92,7 @@ class DeletionStates(StatesGroup):
     """Состояния для процесса предложки места"""
     waiting_for_district = State()
     waiting_for_deletion = State()
-@admin_router.message(DeletionStates, F.text)
+@admin_router.message(StateFilter(DeletionStates), F.text)
 async def handle_exceptions(message: types.Message, state: FSMContext):
     if message.text.lower() == 'отмена':
         await state.clear()
