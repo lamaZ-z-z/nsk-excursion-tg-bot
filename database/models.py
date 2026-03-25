@@ -20,7 +20,7 @@ class MainBanner(Base):
 
     __tablename__ = 'main_banner'
     
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, unique=True)
 
     image: Mapped[str] = mapped_column(String(150), default=default_image)
 
@@ -34,7 +34,7 @@ class District(Base):
     '''
     __tablename__ = 'district'
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, unique=True)
 
     image: Mapped[str] = mapped_column(String(150), default=default_image)
 
@@ -52,7 +52,7 @@ class Place(Base):
     '''
     __tablename__ = 'product'
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, unique=True)
 
     district_name: Mapped[str] = mapped_column(ForeignKey('district.name', ondelete="CASCADE"), nullable=False)
     district_translit_name: Mapped[str] = mapped_column(ForeignKey('district.translit_name', ondelete="CASCADE"), nullable=False)
@@ -73,7 +73,7 @@ class PlaceSuggestion(Base):
     '''
     __tablename__ = 'place_suggestion'
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, unique=True)
     # Район
     district_id: Mapped[int] = mapped_column(
         ForeignKey('district.id', ondelete="CASCADE"), nullable=False)
