@@ -127,7 +127,10 @@ async def send_places_to_del(
 
         reply_markup = await get_del_places_btns(district_name=district, session=session)
         if not has_buttons(reply_markup):
-            await message.answer("Кажется в этом районе нет никаких мест для удаления, был совершён выход из состояния удаления")
+            await message.answer(
+                text="Кажется в этом районе нет никаких мест для удаления, был совершён выход из состояния удаления",
+                reply_markup=ReplyKeyboardRemove
+            )
             await state.clear()
         else:
             await message.answer(
