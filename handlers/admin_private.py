@@ -19,6 +19,7 @@ from common import cmds, districts
 from utils.pagination import Paginator, pagination_btns
 from kbds.inline import get_suggestions_view_btns, get_del_places_btns
 from kbds.reply import get_districts_keyboard
+from utils.btns_check import has_buttons
 
 
 admin_router = Router()
@@ -112,9 +113,9 @@ async def del_place(message: types.Message, state: FSMContext):
 
 @admin_router.message(DeletionStates.waiting_for_district, F.text)
 async def send_places_to_del(
-    state: FSMContext,
-    session: AsyncSession,
     message: types.Message,
+    session: AsyncSession,
+    state: FSMContext,
 ):
     district = message.text
     if district not in districts:
@@ -125,7 +126,7 @@ async def send_places_to_del(
         await state.update_data(district=district)
 
         reply_markup = await get_del_places_btns(district_name=district, session=session)
-        if not reply_markup:
+        if not has_buttons(reply_markup):
             await message.answer("Кажется в этом районе нет никаких мест для удаления, был совершён выход из состояния удаления")
             await state.clear()
         else:
@@ -158,7 +159,7 @@ async def handle_deletion_pagination(
 @admin_router.callback_query(F.data.startswith("delete_"))
 async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession):
     try:
-        place_id = int(callback_query.data.split('-')[-1])
+        place_id = int(callback_query.data.split('_')[-1])
         place = get_place(session, place_id)
         await delete_place(session=session, place_id=place_id)
         await callback_query.answer(text=f'Место {place.name} успешно удалено')
