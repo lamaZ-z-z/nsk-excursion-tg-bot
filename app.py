@@ -46,7 +46,7 @@ async def on_startup(bot: Bot):
     '''Функция, которая выполняется при запуске тг-бота. В ней 
     создаётся база данных, если dropping_db = True, то база данных 
     очищается и создаётся новая.'''
-    dropping_db = False
+    dropping_db = True
     if dropping_db:
         await drop_db()
         await create_db()
