@@ -57,17 +57,13 @@ async def get_places_level_btns(
     keyboard = InlineKeyboardBuilder()
 
     places = await get_places_by_district(translit_name=translit_district, session=session)
-
     
-    paginator = Paginator(array=places, page=page_num, per_page=5)
+    paginator = Paginator(array=places, page=page_num, per_page=4)
     page = paginator.get_page()
-
     for place in page:
         keyboard.button(
             text=place.name, callback_data=LevelCallBack(place_id=place.id, level=level+1).pack()
         )
-
-    
     keyboard.button(text="назад ↩️",
                     callback_data=LevelCallBack(level=level-1).pack()
     )
@@ -79,14 +75,14 @@ async def get_places_level_btns(
             row.append(InlineKeyboardButton(text=text,
                     callback_data=LevelCallBack(
                         level=level,
-                        page=page_num+1).pack())
+                        page=paginator.get_page+1).pack())
             )
 
         elif menu_name == "previous":
             row.append(InlineKeyboardButton(text=text,
                     callback_data=LevelCallBack(
                         level=level,
-                        page=page_num-1).pack())
+                        page=paginator.get_page-1).pack())
             )
     if row:
         return keyboard.row(*row).as_markup()
