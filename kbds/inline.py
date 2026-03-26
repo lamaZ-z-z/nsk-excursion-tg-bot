@@ -57,7 +57,9 @@ async def get_places_level_btns(
     keyboard = InlineKeyboardBuilder()
 
     places = await get_places_by_district(translit_name=translit_district, session=session)
-    
+    if not isinstance(page_num, int):
+        page_num = 1
+
     paginator = Paginator(array=places, page=page_num, per_page=5)
     page = paginator.get_page()
     for place in page:
