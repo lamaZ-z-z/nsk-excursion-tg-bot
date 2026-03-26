@@ -58,13 +58,16 @@ async def get_places_level_btns(
 
     places = await get_places_by_district(translit_name=translit_district, session=session)
 
+    
     paginator = Paginator(array=places, page=page_num, per_page=5)
-    page = paginator.get_page()
+    if paginator.pages > page_num:
+        page = paginator.get_page()
 
-    for place in page:
-        keyboard.button(
-            text=place.name, callback_data=LevelCallBack(place_id=place.id, level=level+1).pack()
-        )
+        for place in page:
+            keyboard.button(
+                text=place.name, callback_data=LevelCallBack(place_id=place.id, level=level+1).pack()
+            )
+
     
     keyboard.button(text="назад ↩️",
                     callback_data=LevelCallBack(level=level-1).pack()
