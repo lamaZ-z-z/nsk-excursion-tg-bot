@@ -66,10 +66,10 @@ async def get_places_level_btns(
             text=place.name, callback_data=LevelCallBack(place_id=place.id, level=level+1).pack()
         )
     
-    keyboard.adjust(*sizes)
     keyboard.button(text="назад ↩️",
                     callback_data=LevelCallBack(level=level-1).pack()
     )
+    keyboard.adjust(*sizes)
 
     row = []
     for text, menu_name in pagination_btns(paginator).items():
