@@ -77,14 +77,17 @@ async def get_places_level_btns(
             row.append(InlineKeyboardButton(text=text,
                     callback_data=LevelCallBack(
                         level=level,
-                        page=page_num+1).pack())
+                        page=page_num+1,
+                        translit_district=translit_district
+                        ).pack())
             )
 
         elif menu_name == "previous":
             row.append(InlineKeyboardButton(text=text,
                     callback_data=LevelCallBack(
                         level=level,
-                        page=page_num-1).pack())
+                        page=page_num-1,
+                        translit_district=translit_district).pack())
             )
     if row:
         return keyboard.row(*row).as_markup()

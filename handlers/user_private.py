@@ -16,7 +16,9 @@ user_private_router.message.filter(ChatTypeFilter(['private']))
 
 @user_private_router.message(CommandStart(), StateFilter(None))
 async def start_cmd(message: types.Message, session: AsyncSession):
-    '''answer on /start message from user'''
+    '''
+    answer on /start message from user
+    '''
     image, reply_markup = await get_levels_content(session=session, level=0, translit_district=None)
     await message.answer_photo(image.media, caption=image.caption, reply_markup=reply_markup)
 
@@ -28,7 +30,8 @@ async def level_callback_handling(
     callback_data: LevelCallBack,
     session: AsyncSession
 ):
-    '''answer on /start message from user'''
+    '''
+    '''
     image, reply_markup = await get_levels_content(
         session=session,
         level=callback_data.level,
@@ -43,6 +46,3 @@ async def level_callback_handling(
         reply_markup=reply_markup
     )
     await callback.answer()
-
-# @user_private_router.callback_query(F.data.in_(districts.values()))
-# async def get

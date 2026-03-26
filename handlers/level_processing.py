@@ -38,7 +38,7 @@ async def get_levels_content(
     level: int,
     translit_district: Optional[str] = None,
     place_id: Optional[str] = None,
-    page_num: Optional[int] = None
+    page_num: int = 1
 ):
     if level == 0:
         return await districts_level(session=session, level=level)
