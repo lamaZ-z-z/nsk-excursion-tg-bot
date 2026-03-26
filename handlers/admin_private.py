@@ -140,12 +140,12 @@ async def send_places_to_del(
         else:
             await message.answer(
                 text="ОСТОРОЖНО!!!\nместо, на кнопку которого ты нажмёшь будет безвозвратно удалено,\
-    чтобы выйти из режима удаления напиши \"отмена\"",
+чтобы выйти из режима удаления напиши \"отмена\"",
                 reply_markup=reply_markup
             )
             await state.set_state(DeletionStates.waiting_for_deletion)
 
-@admin_router.callback_query(DeletionStates.waiting_for_district, F.data.startswith("page_"))
+@admin_router.callback_query(DeletionStates.waiting_for_deletion, F.data.startswith("page_"))
 async def handle_deletion_pagination(
     callback_query: types.CallbackQuery,
     state: FSMContext,
