@@ -173,7 +173,7 @@ async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSess
         
         await delete_place(session=session, place_id=place_id)
         await callback_query.message.answer(
-            text='Место успешно удалено, чтобы выйти из режима удаления напиши "отмена"',
+            text=f'Место {place.name} успешно удалено, чтобы выйти из режима удаления напиши "отмена"',
             reply_markup=ReplyKeyboardRemove(),
         )
     except Exception as E:

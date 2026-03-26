@@ -29,7 +29,7 @@ async def places_level(session: AsyncSession, level: int, translit_district: str
 async def place_level(session: AsyncSession, level: int, place_id: int):
     place = await orm_queries.get_place(session=session, place_id=place_id)
     kbds = await get_place_kbds(session=session, level=level, place_id=place_id)
-    image = InputMediaPhoto(media=place.image, caption=place.description)
+    image = InputMediaPhoto(media=place.image, caption=f"{place.name}\n--------------\n{place.description}")
     return image, kbds
 
 
