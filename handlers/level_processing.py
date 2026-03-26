@@ -24,8 +24,6 @@ async def places_level(session: AsyncSession, level: int, translit_district: str
     kbds = await get_places_level_btns(level=level, session=session,
                                  translit_district=translit_district, page_num=page_num)
     image = InputMediaPhoto(media=district.image, caption=district.description)
-    if not kbds:
-        print("\n\n\n\n\n\nFUCKKKKKK THERE S NO KBDSSS\n\n\n\n\n")
     return image, kbds
 
 async def place_level(session: AsyncSession, level: int, place_id: int):
