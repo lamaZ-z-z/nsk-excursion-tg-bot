@@ -158,7 +158,7 @@ async def handle_deletion_pagination(
     reply_markup = await get_del_places_btns(
         district_name=district, 
         session=session, 
-        page=page
+        page_num=page
     )
     
     if reply_markup:

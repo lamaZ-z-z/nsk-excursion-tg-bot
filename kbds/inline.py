@@ -153,7 +153,7 @@ async def get_del_places_btns(
     district_name: str, 
     session: AsyncSession, 
     sizes: tuple[int] = (1,),
-    page: int = 1
+    page_num: int = 1
 ):
     '''
     function for getting buttons with places
@@ -161,7 +161,7 @@ async def get_del_places_btns(
     keyboard = InlineKeyboardBuilder()
 
     places = await get_places_by_district(district_name=district_name, session=session)
-    paginator = Paginator(places, page=page, per_page=5)
+    paginator = Paginator(places, page=page_num, per_page=5)
     page = paginator.get_page()
 
     for place in page:
@@ -175,10 +175,10 @@ async def get_del_places_btns(
     for text, menu_name in pagination_btns(paginator).items():
         if menu_name == "next":
             row.append(InlineKeyboardButton(text=text,
-                    callback_data=f"page_{page+1}"))
+                    callback_data=f"page_{page_num+1}"))
 
         elif menu_name == "previous":
             row.append(InlineKeyboardButton(text=text,
-                    callback_data=f"page_{page-1}"))
+                    callback_data=f"page_{page_num-1}"))
 
     return keyboard.row(*row).as_markup()
