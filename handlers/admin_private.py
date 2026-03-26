@@ -166,7 +166,7 @@ async def handle_deletion_pagination(
     await callback_query.answer()
 
 @admin_router.callback_query(DeletionStates.waiting_for_deletion, F.data.startswith("delete_"))
-async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession):
+async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSession, state: FSMContext):
     try:
         place_id = int(callback_query.data.split('_')[-1])
         place = await get_place(session, place_id)
@@ -176,6 +176,18 @@ async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSess
             text=f'Место {place.name} успешно удалено, чтобы выйти из режима удаления напиши "отмена"',
             reply_markup=ReplyKeyboardRemove(),
         )
+        data = await state.get_data()
+        district = data.get('district')
+            
+        page = int(callback_query.data.split('_')[-1])
+        reply_markup = await get_del_places_btns(
+            district_name=district, 
+            session=session, 
+            page_num=1
+        )
+        
+        if reply_markup:
+            await callback_query.message.edit_reply_markup(reply_markup=reply_markup)
+        await callback_query.answer()
     except Exception as E:
         await callback_query.message.answer(f"Возникла непредвиденная ошибка\n {E}")
-        
