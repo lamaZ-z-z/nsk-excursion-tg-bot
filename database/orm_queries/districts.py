@@ -92,8 +92,8 @@ async def orm_districts_on_start(session: AsyncSession, districs: dict):
     for k, v in districs.items():
         obj = District(
             name=k,
-            translit_name=v,
-            description=get_district_description(k)
+            description=v['description'],
+            translit_name=v['translit_name']
         )
         session.add(obj)
     obj = MainBanner(image=default_image)
