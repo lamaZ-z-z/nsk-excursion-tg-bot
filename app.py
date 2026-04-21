@@ -2,7 +2,7 @@
 import asyncio
 import os
 from dotenv import find_dotenv, load_dotenv 
-load_dotenv(find_dotenv())   # так и должно быть
+load_dotenv(find_dotenv())
 
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
@@ -46,13 +46,11 @@ async def on_startup(bot: Bot):
     '''Функция, которая выполняется при запуске тг-бота. В ней 
     создаётся база данных, если dropping_db = True, то база данных 
     очищается и создаётся новая.'''
-    dropping_db = True
+    dropping_db = False
     if dropping_db:
         await drop_db()
-        await create_db()
-        await after_creation()
-    else:
-        await create_db()
+    await create_db()
+    await after_creation()
 
 
 async def main():

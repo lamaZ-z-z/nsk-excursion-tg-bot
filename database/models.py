@@ -50,7 +50,7 @@ class Place(Base):
     '''
     Таблица для экскурсионных мест
     '''
-    __tablename__ = 'product'
+    __tablename__ = 'place'
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, unique=True)
 
