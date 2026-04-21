@@ -87,18 +87,34 @@ async def delete_district(
     return result.rowcount > 0
 
 
-async def orm_districts_on_start(session: AsyncSession, districs: dict):
-    '''function for adding basic 4 districts of Novosibirsk in db'''
-    for k, v in districs.items():
-        obj = District(
-            name=k,
-            description=v['description'],
-            translit_name=v['translit_name']
-        )
-        session.add(obj)
-    obj = MainBanner(image=default_image)
-    session.add(obj)
+async def orm_districts_on_start(session: AsyncSession, districts: dict):
+    # 1. Получаем все существующие районы из БД одним запросом
+    result = await session.execute(select(District))
+    existing_districts = {d.name: d for d in result.scalars().all()}
+
+    for name, data in districts.items():
+        if name in existing_districts:
+            # 2. Если район есть — проверяем изменения
+            obj = existing_districts[name]
+            if (obj.description != data['description'] or 
+                obj.translit_name != data['translit_name']):
+                obj.description = data['description']
+                obj.translit_name = data['translit_name']
+        else:
+            # 3. Если района нет — создаем новый
+            new_district = District(
+                name=name,
+                description=data['description'],
+                translit_name=data['translit_name']
+            )
+            session.add(new_district)
+            
+            # Добавляем баннер только для новых районов
+            new_banner = MainBanner(image=default_image, district=new_district)
+            session.add(new_banner)
+
     await session.commit()
+
 
 
 async def get_district_id(session: AsyncSession, district_name: str) -> Optional[District]:
