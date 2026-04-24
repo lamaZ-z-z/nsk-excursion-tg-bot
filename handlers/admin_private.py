@@ -15,7 +15,8 @@ from database.orm_queries import (
     add_place_from_suggestion,
     get_suggestion_by_id,
     delete_place,
-    get_place
+    get_place,
+    update_district
 )
 from common import cmds, districts
 from utils.pagination import Paginator, pagination_btns
@@ -191,3 +192,51 @@ async def deleting_place(callback_query: types.CallbackQuery, session: AsyncSess
         await callback_query.answer()
     except Exception as E:
         await callback_query.message.answer(f"Возникла непредвиденная ошибка\n {E}")
+
+# -------------------------------------
+class ChangeBannerStates(StatesGroup):
+    """Состояния для процесса предложки места"""
+    waiting_for_district = State()
+    waiting_for_photo = State()
+    commiting = State()
+
+@admin_router.message(StateFilter(ChangeBannerStates), F.text.lower() == 'отмена')
+async def cancel(message: types.Message, state: FSMContext):
+    '''Функция для отмены добавления места'''
+    await message.answer("Действия отменены", reply_markup=ReplyKeyboardRemove())
+    await state.clear()
+
+@admin_router.message(Command("change_banner"), StateFilter(None))
+async def command_suggest(message: types.Message, state: FSMContext):
+    '''функция которая отвечает на команду suggest'''
+    await message.answer("Выбери у какого района хочешь изменить банер", reply_markup=get_districts_keyboard())
+    await state.set_state(ChangeBannerStates.waiting_for_district)
+
+@admin_router.message(ChangeBannerStates.waiting_for_district, F.text)
+async def district_processing(message: types.Message, state: FSMContext):
+    try:
+        district = message.text
+        translit_name = districts[district]['translit_name']
+        await state.update_data(translit_name=translit_name)
+        await message.answer("Теперь нужно отправить фотографию", reply_markup=ReplyKeyboardRemove())
+        await state.set_state(ChangeBannerStates.waiting_for_photo)
+    except Exception as e:
+        await message.answer(f"Произошла ошибка, напиши \"отмена\" для возвращения к обычной работе бота: \n{e}")
+        return
+
+@admin_router.message(ChangeBannerStates.waiting_for_photo, or_f(F.photo, F.text))
+async def process_photo(message: types.Message, state: FSMContext, session: AsyncSession):
+    '''Функция для обработки фото места
+    и запроса подтверждения на добавление'''
+    # Сохраняем информацию о фото
+    if message.photo:
+        image = message.photo[-1] # Получаем самое большое качество фото
+        await update_district(session=session, translit_name=state.get_data()['translit_name'], image=image)
+    elif message.media_group_id:
+        await message.answer("Нужна только одна фотография! Выбери самую лучшую и отправь снова 😁")
+        return
+    elif message.text:
+        await message.answer("Отправь фотографию или напиши \"отмена\"(без кавычек), чтобы вернутся к обычной работе бота")
+        return
+
+    await state.clear()

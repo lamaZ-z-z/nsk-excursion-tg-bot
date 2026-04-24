@@ -62,15 +62,23 @@ async def get_all_districts(
 
 async def update_district(
     session: AsyncSession,
-    district_id: int,
+    district_id: Optional[int] = None,
+    translit_name: Optional[str] = None,
     **kwargs
 ) -> Optional[District]:
     """Обновление района"""
-    await session.execute(
-        update(District)
-        .where(District.id == district_id)
-        .values(**kwargs)
-    )
+    if district_id:
+        await session.execute(
+            update(District)
+            .where(District.id == district_id)
+            .values(**kwargs)
+        )
+    elif translit_name:
+        await session.execute(
+            update(District)
+            .where(District.translit_name == translit_name)
+            .values(**kwargs)
+        )
     await session.commit()
     return await get_district(session, district_id=district_id)
 

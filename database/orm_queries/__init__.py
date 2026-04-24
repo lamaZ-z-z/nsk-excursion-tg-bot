@@ -8,7 +8,7 @@ from .places_suggest import (
 from .districts import (
     add_district, get_all_districts,
     get_district, orm_districts_on_start,
-    get_district_id
+    get_district_id, update_district
 )
 from .main import add_main_banner, get_main_banner, update_main_banner
 from .places import (
