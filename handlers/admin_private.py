@@ -229,14 +229,19 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
     '''Функция для обработки фото места
     и запроса подтверждения на добавление'''
     # Сохраняем информацию о фото
-    if message.photo:
-        image = message.photo[-1] # Получаем самое большое качество фото
-        await update_district(session=session, translit_name=state.get_data()['translit_name'], image=image)
-    elif message.media_group_id:
-        await message.answer("Нужна только одна фотография! Выбери самую лучшую и отправь снова 😁")
-        return
-    elif message.text:
-        await message.answer("Отправь фотографию или напиши \"отмена\"(без кавычек), чтобы вернутся к обычной работе бота")
-        return
+    try:
+        if message.photo:
+            image = message.photo[-1] # Получаем самое большое качество фото
+            await update_district(session=session, translit_name=await state.get_data()['translit_name'], image=image)
+            await message.answer("Фото успешно изменено :)")
+            await state.clear()
 
-    await state.clear()
+        elif message.media_group_id:
+            await message.answer("Нужна только одна фотография! Выбери самую лучшую и отправь снова 😁")
+            return
+        elif message.text:
+            await message.answer("Отправь фотографию или напиши \"отмена\"(без кавычек), чтобы вернутся к обычной работе бота")
+            return
+    except Exception as e:
+        await message.answer(f"Произошла ошибка, напиши \"отмена\" для возвращения к обычной работе бота: \n{e}")
+        return
