@@ -231,7 +231,7 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
     # Сохраняем информацию о фото
     try:
         if message.photo:
-            image = message.photo[-1] # Получаем самое большое качество фото
+            image = message.photo[-1]['file_id'] # Получаем самое большое качество фото
             data = await state.get_data()
             await update_district(session=session, translit_name=data['translit_name'], image=image)
             await message.answer("Фото успешно изменено :)")
