@@ -64,7 +64,7 @@ async def handle_district(message: types.Message, state: FSMContext, session: As
             await message.answer("Кажется выбранного района нет в списке, попробуй ещё раз")
         else:
             await state.update_data(
-                district_id=(await get_district_id(session, district_name)).id,
+                district_id=(await get_district_id(session, district_name))['id'],
                 district_name=district_name,
                 user_id=message.from_user.id
             )
@@ -143,15 +143,6 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
         await message.answer("Нужно отправить фото! (или напиши \"отмена\" без кавычек)")
     
     data = await state.get_data()
-    cleaned_data = {
-    "district_name": data.get("district_name"),
-    "place_name": data.get("place_name"),
-    "description": data.get("description"),
-    "photo_url": data.get("photo_url"),
-    "location_url": data.get("location_url"),
-    "district_id": data.get("district_id"),
-    "user_id": data.get("user_id")
-}
     if (message.from_user.id == 5256135255
         or message.from_user.id == 5060090557
     ):
