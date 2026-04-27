@@ -117,7 +117,6 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
             photo_url=photo.file_id
         )
         await message.answer(SIX_ANS, reply_markup=ReplyKeyboardRemove())
-        await state.clear()
     elif message.media_group_id:
         await message.answer("Нужна только одна фотография! Выбери самую лучшую и отправь снова 😁")
         return
@@ -125,7 +124,6 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
         if "нет фото" in message.text.lower():
             await message.answer("Принято, без фотографии",
              reply_markup=ReplyKeyboardRemove())
-            await state.clear()
         else:
             await message.answer("Нужно отправить фото или написать \"нет фото\"",
              reply_markup=ReplyKeyboardRemove())
@@ -141,5 +139,5 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
     else:
         new_suggestion = await add_place_suggestion(session=session, **(await state.get_data()))
         await message.answer(SEV_ANS)
-        await state.clear()
+    await state.clear()
  
