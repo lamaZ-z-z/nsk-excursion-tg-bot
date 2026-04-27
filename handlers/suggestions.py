@@ -64,7 +64,7 @@ async def handle_district(message: types.Message, state: FSMContext, session: As
             await message.answer("Кажется выбранного района нет в списке, попробуй ещё раз")
         else:
             await state.update_data(
-                district_id=(await get_district_id(session, district_name))['id'],
+                district_id=(await get_district_id(session, district_name)).id['id'],
                 district_name=district_name,
                 user_id=message.from_user.id
             )
