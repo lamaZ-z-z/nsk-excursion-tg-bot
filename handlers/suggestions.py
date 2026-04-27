@@ -149,6 +149,8 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
     "description": data.get("description"),
     "photo_url": data.get("photo_url"),
     "location_url": data.get("location_url"),
+    "district_id": data.get("district_id"),
+    "user_id": data.get("user_id")
 }
     if (message.from_user.id == 5256135255
         or message.from_user.id == 5060090557
