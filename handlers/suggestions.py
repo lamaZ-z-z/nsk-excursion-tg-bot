@@ -84,11 +84,13 @@ async def handle_place_name(message: types.Message, state: FSMContext):
 async def handle_description(message: types.Message, state: FSMContext):
     '''Функция для обработки отправленного описания места
     и запроса 2ГИС url для добавления'''
-    description = message.text
-    await state.update_data(description=description)
-    await message.answer(FOUR_ANS)
-    await state.set_state(SuggestionStates.waiting_for_location_url)
-    time.sleep(6)
+    if message.text:
+        description = message.text
+        await state.update_data(description=description)
+        await message.answer(FOUR_ANS)
+        await state.set_state(SuggestionStates.waiting_for_location_url)
+    else:
+        await message.answer("Нужно отправить описание! (или напиши \"отмена\" без кавычек)")
 
 
 @suggestion_router.message(SuggestionStates.waiting_for_location_url)
