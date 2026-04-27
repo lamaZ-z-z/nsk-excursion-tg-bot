@@ -92,6 +92,9 @@ async def handle_description(message: types.Message, state: FSMContext):
     и запроса 2ГИС url для добавления'''
     if message.text:
         description = message.text
+        if len(description) > 970:
+            await message.answer("Кажется описание слишком большое и телеграм его не пропустит! попробуй укоротить или напиши \"отмена\" без кавычек")
+            return 
         await state.update_data(description=description)
         await message.answer(FOUR_ANS)
         await state.set_state(SuggestionStates.waiting_for_location_url)
