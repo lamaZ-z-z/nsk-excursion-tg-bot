@@ -103,7 +103,7 @@ class DeletionStates(StatesGroup):
 
 @admin_router.message(StateFilter(DeletionStates), F.text.lower() == 'отмена')
 async def handle_cancel(message: types.Message, state: FSMContext):
-    await message.answer(text="действия отменены", reply_markup=ReplyKeyboardRemove())
+    await message.answer(text="совершён выход из состояния удаления", reply_markup=ReplyKeyboardRemove())
     await state.clear()
 
 
