@@ -146,12 +146,12 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
     if (message.from_user.id == 5256135255
         or message.from_user.id == 5060090557
     ):
-        new_suggestion = await add_place_suggestion(session=session, status='approved', **cleaned_data)
+        new_suggestion = await add_place_suggestion(session=session, status='approved', **data)
         await add_place_from_suggestion(session=session, suggested_place=new_suggestion)
         await message.answer(f"Место \"{new_suggestion.place_name}\"\
  теперь доступно в районе {new_suggestion.district_name}")
     else:
-        new_suggestion = await add_place_suggestion(session=session, **cleaned_data)
+        new_suggestion = await add_place_suggestion(session=session, **data)
         await message.answer(SEV_ANS)
     await state.clear()
  
