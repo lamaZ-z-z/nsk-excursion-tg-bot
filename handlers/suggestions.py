@@ -58,27 +58,33 @@ async def command_suggest(message: types.Message, state: FSMContext):
 async def handle_district(message: types.Message, state: FSMContext, session: AsyncSession):
     '''Функция для обработки id выбранного района
     и запроса названия места для добавления'''
-    district = message.text
-    if district not in districts:
-        await message.answer("Кажется выбранного района нет в списке, попробуй ещё раз")
+    if message.text:
+        district = message.text
+        if district not in districts:
+            await message.answer("Кажется выбранного района нет в списке, попробуй ещё раз")
+        else:
+            await state.update_data(district_id=(
+                await get_district_id(session, district)).id,
+                district_name=district,
+                user_id=message.from_user.id
+            )
+            await message.answer(SEC_ANS, reply_markup=ReplyKeyboardRemove())
+            await state.set_state(SuggestionStates.waiting_for_place_name)
     else:
-        await state.update_data(district_id=(
-            await get_district_id(session, district)).id,
-            district_name=district,
-            user_id=message.from_user.id
-        )
-        await message.answer(SEC_ANS, reply_markup=ReplyKeyboardRemove())
-        await state.set_state(SuggestionStates.waiting_for_place_name)
-
+        await message.answer("Нужно выбрать один из предложенных районов! (или напиши \"отмена\" без кавычек)")
 
 @suggestion_router.message(SuggestionStates.waiting_for_place_name)
 async def handle_place_name(message: types.Message, state: FSMContext):
     '''Функция для обработки отправленного названия места
     и запроса описания для добавления'''
-    place_name = message.text
-    await state.update_data(place_name=place_name)
-    await message.answer(TH_ANS)
-    await state.set_state(SuggestionStates.waiting_for_description)
+    if message.text:
+        place_name = message.text
+        await state.update_data(place_name=place_name)
+        await message.answer(TH_ANS)
+        await state.set_state(SuggestionStates.waiting_for_description)
+    else:
+        await message.answer("Нужно отправить название! (или напиши \"отмена\" без кавычек)")
+
 
 @suggestion_router.message(SuggestionStates.waiting_for_description)
 async def handle_description(message: types.Message, state: FSMContext):
@@ -97,14 +103,17 @@ async def handle_description(message: types.Message, state: FSMContext):
 async def handle_url(message: types.Message, state: FSMContext):
     '''Функция для обработки отправленного 2GIS url места
     и фото для добавления'''
-    url = find_2gis_link(message.text)
-    if not url:
-        await message.answer("Неверный формат ссылки \nПопробуй другую ссылку или напиши \"отмена\",\
-чтобы завершить добавление места")
-        return
-    await state.update_data(location_url=url)
-    await message.answer(FIF_ANS, reply_markup=get_keyboard("Нет фотографии"))
-    await state.set_state(SuggestionStates.waiting_for_photo)
+    if message.text:
+        url = find_2gis_link(message.text)
+        if not url:
+            await message.answer("Неверный формат ссылки \nПопробуй другую ссылку или напиши \"отмена\",\
+    чтобы завершить добавление места")
+            return
+        await state.update_data(location_url=url)
+        await message.answer(FIF_ANS, reply_markup=get_keyboard("Нет фотографии"))
+        await state.set_state(SuggestionStates.waiting_for_photo)
+    else:
+        await message.answer("Нужно отправить ссылку! (или напиши \"отмена\" без кавычек)")
 
 
 @suggestion_router.message(SuggestionStates.waiting_for_photo, or_f(F.photo, F.text))
@@ -130,6 +139,9 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
             await message.answer("Нужно отправить фото или написать \"нет фото\"",
              reply_markup=ReplyKeyboardRemove())
             return
+    else:
+        await message.answer("Нужно отправить фото! (или напиши \"отмена\" без кавычек)")
+    
     
     if (message.from_user.id == 5256135255
         or message.from_user.id == 5060090557
