@@ -126,7 +126,7 @@ async def add_place_from_suggestion(
     из предложки'''
     place = Place(
         district_name = suggested_place.district_name,
-        district_translit_name = districts[suggested_place.district_name],
+        district_translit_name = districts[suggested_place.district_name]['translit_name'],
         name = suggested_place.place_name,
         description = suggested_place.description,
         image = suggested_place.photo_url,
