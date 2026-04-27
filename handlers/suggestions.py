@@ -116,7 +116,7 @@ async def handle_url(message: types.Message, state: FSMContext):
         await message.answer("Нужно отправить ссылку! (или напиши \"отмена\" без кавычек)")
 
 
-@suggestion_router.message(SuggestionStates.waiting_for_photo, or_f(F.photo, F.text))
+@suggestion_router.message(SuggestionStates.waiting_for_photo)
 async def process_photo(message: types.Message, state: FSMContext, session: AsyncSession):
     '''Функция для обработки фото места
     и запроса подтверждения на добавление'''
@@ -142,16 +142,16 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
     else:
         await message.answer("Нужно отправить фото! (или напиши \"отмена\" без кавычек)")
     
-    
+    data = await state.get_data()
     if (message.from_user.id == 5256135255
         or message.from_user.id == 5060090557
     ):
-        new_suggestion = await add_place_suggestion(session=session, status='approved', **(await state.get_data()))
+        new_suggestion = await add_place_suggestion(session=session, status='approved', **data)
         await add_place_from_suggestion(session=session, suggested_place=new_suggestion)
         await message.answer(f"Место \"{new_suggestion.place_name}\"\
  теперь доступно в районе {new_suggestion.district_name}")
     else:
-        new_suggestion = await add_place_suggestion(session=session, **(await state.get_data()))
+        new_suggestion = await add_place_suggestion(session=session, **data)
         await message.answer(SEV_ANS)
     await state.clear()
  
