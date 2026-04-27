@@ -48,10 +48,11 @@ async def suggestions_review(message: types.Message, session: AsyncSession):
     paging_btns = pagination_btns(paginator)
     place = paginator.get_page()[0]
     kbd = get_suggestion_view_btns(place_id=place.id, paging_btns=paging_btns, page_id=1)
+    caption = f"Предложение \"{place.place_name}\" в район {place.district_name}\n\n\
+{place.description}\n{place.location_url}\n--------\nStatus - {place.status}"
     image = types.InputMediaPhoto(
         media=place.photo_url,
-        caption=f"Предложение \"{place.place_name}\" в район {place.district_name}\n\n\
-{place.description}\n{place.location_url}\n--------\nStatus - {place.status}"
+        caption=caption[:1024]
     )
     await message.answer_photo(
         photo=image.media,
@@ -71,7 +72,7 @@ async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
 {place.description}\n{place.location_url}\n--------\nStatus - {place.status}"
     image = types.InputMediaPhoto(
         media=place.photo_url,
-        caption=caption[:800]
+        caption=caption[:1024]
     ) 
     await callback.message.edit_media(
         media=image,
