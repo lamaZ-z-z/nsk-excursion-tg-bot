@@ -59,13 +59,13 @@ async def handle_district(message: types.Message, state: FSMContext, session: As
     '''Функция для обработки id выбранного района
     и запроса названия места для добавления'''
     if message.text:
-        district = message.text
-        if district not in districts:
+        district_name = message.text
+        if district_name not in districts:
             await message.answer("Кажется выбранного района нет в списке, попробуй ещё раз")
         else:
-            await state.update_data(district_id=(
-                await get_district_id(session, district)).id,
-                district_name=district,
+            await state.update_data(
+                district_id=(await get_district_id(session, district_name)).id,
+                district_name=district_name,
                 user_id=message.from_user.id
             )
             await message.answer(SEC_ANS, reply_markup=ReplyKeyboardRemove())
@@ -143,15 +143,22 @@ async def process_photo(message: types.Message, state: FSMContext, session: Asyn
         await message.answer("Нужно отправить фото! (или напиши \"отмена\" без кавычек)")
     
     data = await state.get_data()
+    cleaned_data = {
+    "district_name": data.get("district_name"),
+    "place_name": data.get("place_name"),
+    "description": data.get("description"),
+    "photo_url": data.get("photo_url"),
+    "location_url": data.get("location_url"),
+}
     if (message.from_user.id == 5256135255
         or message.from_user.id == 5060090557
     ):
-        new_suggestion = await add_place_suggestion(session=session, status='approved', **data)
+        new_suggestion = await add_place_suggestion(session=session, status='approved', **cleaned_data)
         await add_place_from_suggestion(session=session, suggested_place=new_suggestion)
         await message.answer(f"Место \"{new_suggestion.place_name}\"\
  теперь доступно в районе {new_suggestion.district_name}")
     else:
-        new_suggestion = await add_place_suggestion(session=session, **data)
+        new_suggestion = await add_place_suggestion(session=session, **cleaned_data)
         await message.answer(SEV_ANS)
     await state.clear()
  
