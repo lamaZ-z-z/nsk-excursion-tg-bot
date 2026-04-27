@@ -71,7 +71,7 @@ async def suggestion_view(callback: types.CallbackQuery, session: AsyncSession):
 {place.description}\n{place.location_url}\n--------\nStatus - {place.status}"
     image = types.InputMediaPhoto(
         media=place.photo_url,
-        caption=caption[:1024]
+        caption=caption[:800]
     ) 
     await callback.message.edit_media(
         media=image,
